@@ -1,0 +1,43 @@
+
+%%
+%% Coq definition (c) 2001 Guillaume Dufay 
+%%                           <Guillaume.Dufay@sophia.inria.fr>
+%%
+\lstdefinelanguage[v7]{Coq}%
+  {morekeywords={Variable,Inductive,CoInductive,Fixpoint,Using,GenFixpoint,CoFixpoint,in,%
+      Definition,Extraction,Lemma,Theorem,Axiom,Local,Save,Grammar,Syntax,Intro,%
+      Trivial,Qed,Intros,Symmetry,Simpl,Rewrite,Apply,Elim,Assumption,%
+      Left,Cut,Case,Auto,Unfold,Exact,Right,Hypothesis,Pattern,Destruct,%
+      Constructor,Defined,Fix,Record,Proof,Induction,Hints,Exists,%
+      Parameter,Split,Red,Reflexivity,Transitivity,if,then,else,Opaque,%
+      Transparent,Inversion,Absurd,Generalize,Mutual,Cases,of,end,with,
+      Module,Type,Declare,Section,End,Import},%
+   sensitive,%
+   morecomment=[n]{(*}{*)},%
+   morestring=[d]",%
+   literate={=>}{{$\Rightarrow$}}1{>->}{{$\rightarrowtail$}}2%
+{->}{{$\to$}}3{~}{{$\lnot$}}1%
+{/\\}{{$\land$}}2{\\/}{{$\lor$}}2%
+}[keywords,comments,strings]%
+
+\lstdefinelanguage{Coq}%
+  {morekeywords={type,Class,Notation,Coercion,Instance,in,Funclass,Program,Variable,Inductive,CoInductive,measure,wf,adhoc,GenFixpoint,Fixpoint,CoFixpoint,%
+      Definition,Lemma,Theorem,Axiom,Save,Grammar,Syntax,intro,Set,Prop,%
+      trivial,Qed,intros,Extraction,symmetry,simpl,rewrite,apply,elim,assumption,let,%
+      cut,match,auto,unfold,exact,Hypothesis,pattern,destruct,struct,%
+      constructor,Defined,Fix,Record,Proof,induction,Hints,exists,%
+      Parameter,split,red,reflexivity,transitivity,if,then,else,Opaque,%
+      Transparent,inversion,absurd,generalize,Mutual,of,end,with,
+      Module,Type,Declare,Section,End,Import,fun,Rewall,match,fail,%
+      eauto,repeat,replace,progress,forall,autorewrite,Functional,%
+      Scheme,params,refine,using,discriminate,try,solve,functional},%
+   sensitive,%
+   showstringspaces=false,
+   morecomment=[n]{(*}{*)},%
+   morestring=[b]",%
+   literate={=>}{{$\Rightarrow$}}2{>->}{{$\rightarrowtail$}}2%
+{->}{{$\to$}}3{~}{{$\lnot$}}1%
+{/\\}{{$\land$}}2{\\/}{{$\lor$}}2%
+{forall}{{$\forall$}}1{exists}{{$\exists$}}1%
+}[keywords,comments,strings]%
+\endinput

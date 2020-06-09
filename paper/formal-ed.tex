@@ -81,7 +81,7 @@ $ ed example.txt
 We start by editing the file \texttt{example.txt}. We will explain the commands that we used:
 
 \begin{itemize}
-\item The command \texttt{i} starts the insertion mode and in the following lines it will accept contents that should be inserted.
+\item The command \texttt{i} starts the insertion mode and in the following lines, it will accept contents that should be inserted.
 \item The command \texttt{.} exits the insertion mode.
 \item The command \texttt{n} shows the current line pointer along with the contents.
 \item Inputting a number as a command will set the line pointer to that number.
@@ -91,7 +91,7 @@ We start by editing the file \texttt{example.txt}. We will explain the commands 
 
 A more generalized editor is a character editor, however, line editors are much more convenient, especially in the REPL mode. For example, it may be tricky for the user to keep track of the position of every character to read/insert/delete.
 
-Coq is a programming language designed with an aim to accomplish software correctness \cite{b2}.
+Coq is a programming language designed to accomplish software correctness \cite{b2}.
 
 \section{Specification}
 
@@ -141,7 +141,7 @@ Definition deleteLine {X : Type} (b : list X) (pos : nat) : (list X) :=
   firstn pos b ++ skipn (pos + 1) b.
 \end{lstlisting}
 
-All of the definitions will be wrapped in a single \texttt{EditorEval} to make it more convenient, and at this point we have implemented the DSL for our editor.
+All of the definitions will be wrapped in a single \texttt{EditorEval} to make it more convenient, and at this point, we have implemented the DSL for our editor.
 
 We can use Coq's extraction facilities to export these definitions to Haskell, for example. If we add IO functionalities on top of these definitions, we will have implemented a similar editor to \texttt{ed}.
 
@@ -164,7 +164,7 @@ The next lemma states that whenever \(n = m\), we can deduce \(n \geq m\).
 Lemma lemma_2 : forall n m, n = m -> n >= m.
 \end{lstlisting}
 
-Finally, \texttt{lemma\_3} states that when a list of length \(n\) is concatenated with another list with an element \(s\) in between, the \(n\)-th element of the concatenated list will be \(s\) (zero indexed).
+Finally, \texttt{lemma\_3} states that when a list of length \(n\) is concatenated with another list with an element \(s\) in between, the \(n\)-th element of the concatenated list will be \(s\) (zero indexed). It relies on \texttt{lemma\_2} for the proof.
 
 \begin{lstlisting}
 Lemma lemma_3 : forall {X:Type} n l1 l2 (s:X) d, length l1 = n -> s = nth n (l1 ++ s :: l2) d.
@@ -198,6 +198,8 @@ Next, we will prove that the line editor can read any text, that is, for all str
 Theorem can_read_text : forall (s : string) (n : nat) (b : list string), n <= List.length b -> snd (EditorEval (ReadLine n "") (fst (EditorEval (InsertLine n s) b))) = s.
 \end{lstlisting}
 
+The proof of the theorem \texttt{can\_read\_text} relies on \texttt{thm\_1}.
+
 Finally, we prove that the line editor can change any text. That is, there exists a function \(f\) that "changes" the value from \(s_1\) to \(s_2\) of reading an inserted line.
 
 \begin{center}
@@ -209,6 +211,8 @@ In the code, \(f\) is defined as a combination of deletion and insertion.
 \begin{lstlisting}
 Theorem can_change_text : forall (s1 s2 : string) (n : nat) (b : list string), n <= List.length b -> s1 = snd (EditorEval (ReadLine n "") b) -> s2 = (snd (EditorEval (ReadLine n "") (fst (EditorEval (InsertLine n s2) (fst (EditorEval (DeleteLine n "") b)))))).
 \end{lstlisting}
+
+The proof of the theorem \texttt{can\_change\_text} relies on \texttt{lemma\_1} and \texttt{thm\_1}.
 
 \section{Conclusion}
 We showed how to formally prove the functionality of a simple subset of text editors. We used line editors, but the same idea can be applied generally to text editors. We defined what a complete text editor means, and mapped those functionalities to Coq definitions. Most (if not all) text editors will use the same specifications. Having a unified standard for text editors will be useful for the users, as they can apply the same knowledge to a variety of editors.

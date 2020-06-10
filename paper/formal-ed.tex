@@ -52,14 +52,14 @@
 \maketitle
 
 \begin{abstract}
-Text editors represent one of the fundamental tools that writers use - software developers, book authors, mathematicians. A text editor must work as intended in that it allows the users to do their job. We will start by introducing a small subset of a text editor - line editor. Next, we will give a concrete definition (specification) of what a complete text editor means. Afterward, we will provide an implementation of a line editor in Coq, and then we will prove that it is a complete text editor.
+Text editors represent one of the fundamental tools that writers use - software developers, book authors, mathematicians. A text editor must work as intended in that it should allow the users to do their job. We start by introducing a small subset of a text editor - line editor. Next, we will give a concrete definition (specification) of what a complete text editor means. Afterward, we will provide an implementation of a line editor in Coq, and then we will prove that it is a complete text editor.
 \end{abstract}
 
 \keywords{Text editors \and Formal verification \and Coq}
 
 \section{Introduction}
 
-A line editor is a text editor that works in REPL mode. It accepts several commands, and each of the commands operates on one or multiple lines of text. The most popular line editor is Unix \texttt{ed} \cite{b1}. We will show a short demo, interacting with the editor on a Unix shell:
+A line editor is a text editor that works in REPL mode. It accepts several commands, and each of the commands operates on one or multiple lines of text. The most popular line editor is Unix \texttt{ed} \cite{b1}, and we will show a short demo interacting with it.
 
 \begin{lstlisting}[language=sh]
 $ ed example.txt
@@ -75,23 +75,21 @@ $ ed example.txt
 > d
 > n
 1	Line two
-> w
 \end{lstlisting}
 
 We start by editing the file \texttt{example.txt}. We will explain the commands that we used:
 
 \begin{itemize}
-\item The command \texttt{i} starts the insertion mode and in the following lines, it will accept contents that should be inserted.
+\item The command \texttt{i} starts the insertion mode and in the next lines it will accept content that should be added.
 \item The command \texttt{.} exits the insertion mode.
 \item The command \texttt{n} shows the current line pointer along with the contents.
 \item Inputting a number as a command will set the line pointer to that number.
 \item The command \texttt{d} deletes the current line.
-\item The command \texttt{w} writes the contents to the file.
 \end{itemize}
 
 A more generalized editor is a character editor, however, line editors are much more convenient, especially in the REPL mode. For example, it may be tricky for the user to keep track of the position of every character to read/insert/delete.
 
-Coq is a programming language designed to accomplish software correctness \cite{b2}.
+Coq \cite{b2} is a programming language designed to accomplish software correctness, and we will use it to implement and prove an implementation.
 
 \section{Specification}
 
@@ -109,7 +107,7 @@ Here's another definition that we'll rely on. This definition is already support
 Strings (list of characters) can be inserted (created), read, and changed.
 \end{definition}
 
-We used the word change here, however, in Coq we don't do any "changes", rather, we'll be simply returning new (updated) strings.
+In Coq we don't do any "changes", rather, we'll be simply returning new (updated) strings.
 
 \theoremstyle{definition}
 \begin{definition}
@@ -184,11 +182,19 @@ The line editor can insert any text, that is, for all strings \(s\) and position
 \(\forall s \forall n \exists b (s \in insertLine( n, b, s ))\)
 \end{center}
 
+We will only show the proof for this theorem, while the remaining proofs can be found in the associated paper's files.
+
 \begin{lstlisting}
 Theorem can_insert_text : forall (s : string) (n : nat), exists (b : list string), fst (EditorEval (InsertLine n s) b) = s :: nil.
+Proof.
+  intros s n. simpl. unfold insertLine. exists nil. simpl.
+  case n.
+    - simpl. reflexivity.
+    - intros. simpl. reflexivity.
+Qed.
 \end{lstlisting}
 
-Next, we will prove that the line editor can read any text, that is, for all strings \(s\), positions \(n\) and buffers \(b\), where the buffer is at least of the length of the requested position, reading from the inserted string at the specific position will return the same string.
+Next, we will prove that the line editor can read any text, that is, for all strings \(s\), positions \(n\) and buffers \(b\), where the buffer is at least of the length of the requested position, reading from the inserted string at the specific position will return the same string. The actual proof of the theorem relies on \texttt{thm\_1}.
 
 \begin{center}
 \(\forall s \forall n \forall b (n \leq |b| \to (readLine(insertLine( n, b, s ), n) = s)\)
@@ -198,9 +204,8 @@ Next, we will prove that the line editor can read any text, that is, for all str
 Theorem can_read_text : forall (s : string) (n : nat) (b : list string), n <= List.length b -> snd (EditorEval (ReadLine n "") (fst (EditorEval (InsertLine n s) b))) = s.
 \end{lstlisting}
 
-The proof of the theorem \texttt{can\_read\_text} relies on \texttt{thm\_1}.
 
-Finally, we prove that the line editor can change any text. That is, there exists a function \(f\) that "changes" the value from \(s_1\) to \(s_2\) of reading an inserted line.
+Finally, we prove that the line editor can change any text. That is, there exists a function \(f\) that "changes" the value from \(s_1\) to \(s_2\) of reading an inserted line. The proof of this theorem relies on \texttt{lemma\_1} and \texttt{thm\_1}.
 
 \begin{center}
 \(\exists f \forall s_1 \forall s_2 \forall n \forall b, f(readLine(insertLine( n, b, s ), n) = s_1) \to (readLine(insertLine( n, b, s ), n) = s_2)\)
@@ -212,12 +217,8 @@ In the code, \(f\) is defined as a combination of deletion and insertion.
 Theorem can_change_text : forall (s1 s2 : string) (n : nat) (b : list string), n <= List.length b -> s1 = snd (EditorEval (ReadLine n "") b) -> s2 = (snd (EditorEval (ReadLine n "") (fst (EditorEval (InsertLine n s2) (fst (EditorEval (DeleteLine n "") b)))))).
 \end{lstlisting}
 
-The proof of the theorem \texttt{can\_change\_text} relies on \texttt{lemma\_1} and \texttt{thm\_1}.
-
 \section{Conclusion}
-We showed how to formally prove the functionality of a simple subset of text editors. We used line editors, but the same idea can be applied generally to text editors. We defined what a complete text editor means, and mapped those functionalities to Coq definitions. Most (if not all) text editors will use the same specifications. Having a unified standard for text editors will be useful for the users, as they can apply the same knowledge to a variety of editors.
-
-Further work can be focused on formalizing full-blown text editors, such as vim \cite{b3}, or more specifically VimScript.
+We showed how to formally prove the functionality of a simple subset of text editors. We used line editors, but the same idea can be applied generally to text editors. We defined what a complete text editor means, and mapped those functionalities to Coq definitions. Most (if not all) text editors will use the same specifications. Having a unified standard for text editors will be useful for the users, as they can apply the same knowledge to a variety of editors. Further work can be focused on formalizing a larger DSL of text editors.
 
 \begin{thebibliography}{1}
 
@@ -230,11 +231,6 @@ Brian W. Kernighan
 Bruno Barras, Samuel Boutin, Cristina Cornes, Judicaël Courant, Jean-Christophe Filliâtre, et al.
 \newblock The Coq Proof Assistant Reference Manual: Version 6.1
 \newblock {\em [Research Report] RT-0203, INRIA}, 1997.
-
-\bibitem{b3}
-Bram Moolenaar
-\newblock VIM-Vi IMproved
-\newblock 2006.
 
 \end{thebibliography}
 
